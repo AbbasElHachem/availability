@@ -516,6 +516,7 @@ def plot_colormesh(var, x_vals, y_vals, grid_vals, color_bounds,
                   (1 / up_lim, 'darkblue')]
         cmap = mcolors.LinearSegmentedColormap.from_list('my_colormap', colors)
         cbar_label = 'Ratio between Minimum annual and Mean of annual Precipitation values'
+    print(grid_vals[0].shape)
     im = ax0.pcolormesh(x_vals, y_vals, grid_vals[0], cmap=cmap,  # cmap,
                         snap=True, alpha=1, shading='gouraud',
                         vmin=var_bounds_dict[var][0],
@@ -531,7 +532,7 @@ def plot_colormesh(var, x_vals, y_vals, grid_vals, color_bounds,
     cbar.ax.tick_params(labelsize=10)
     plt.grid(alpha=0.5, linestyle='--')
 
-    plt.xlabel('Longitude', fontsize=12), plt.ylabel('Latitude', fontsize=12)
+    plt.xlabel('Longitude', fontsize=13), plt.ylabel('Latitude', fontsize=13)
     plt.axis('equal')
     if plot_fig_titles:
         fig.suptitle(plot_title, fontsize=12, y=.92)
@@ -543,9 +544,9 @@ def plot_colormesh(var, x_vals, y_vals, grid_vals, color_bounds,
         plt.yticks(np.arange(-90, 91, 30), ('90S', '60S', '30S', '0',
                                             '30N', '60N', '90N'))
 
-    cbar.set_label(cbar_label, fontsize=12)
+    cbar.set_label(cbar_label, fontsize=13)
     plt.savefig(os.path.join(
-        out_save_dir, var + data_source + '_' + pref + '_ppt_values_.png'),
+        out_save_dir, var + data_source + '_' + pref + '_ppt_values_2.png'),
         frameon=True, papertype='a4', bbox_inches='tight')
     plt.close()
     return
@@ -578,7 +579,8 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
         if plt_var_mtx:
             var_bounds_dict = {vars_fldr[0]: [0, 500.01]}
             bounds_mean = [0, 5, 50, 125, 250, 450, 500, 500.01]
-#             bounds_mean = [0, 50, 100, 300, 500, 500.01]
+#             var_bounds_dict = {vars_fldr[0]: [0, 1.01]}
+#             bounds_mean = [0, .1, .2, .5, .75, 1]
             color_bounds = {vars_fldr[0]: bounds_mean}
     if var_to_plt == 'monthly':
         if plt_orig_vls:
@@ -655,7 +657,7 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
             color_bounds = {var: bounds_mean}
             x_vals = cPickle.load(open("grid_x_vls.pkl", 'rb'))
             y_vals = cPickle.load(open("grid_y_vls.pkl", 'rb'))
-            fig = plt.figure(figsize=(27, 12), dpi=100)
+            fig = plt.figure(figsize=(27, 18), dpi=400)
             fig.subplots_adjust(hspace=0.1, wspace=0.1)
 #             up_lim = 800.01
 #             colors = [(0, "indianred"), (50 / up_lim, "orange"),
@@ -675,7 +677,12 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
             monthes = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May',
                        6: 'June', 7: 'July', 8: 'August', 9: 'September',
                        10: 'October', 11: 'November', 12: 'December'}
-            fontsize = 13
+            from matplotlib import rc
+            from matplotlib import rcParams
+            rc('font', size=16)
+            rc('font', family='serif')
+            rc('axes', labelsize=20)
+            rcParams['axes.labelpad'] = 35
             for i in range(1, 13):
                 print('plotting for var: %s and month nbr: %d' % (var, i))
 #                 df_fldr = os.path.join(data_dir_gpc, var + '_per_month',
@@ -697,7 +704,7 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
 
                 ax = fig.add_subplot(3, 4, i)
                 ax.set_title('%s' %
-                             monthes[i], fontweight="bold", size=fontsize)  # Title
+                             monthes[i], fontweight="bold")  # , size=fontsize)  # Title
 
                 grid_vals = cPickle.load(open("grid_vls_per_mth_%d.pkl"
                                               % i, 'rb'))
@@ -714,22 +721,22 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
                     ax.set_yticklabels([])
                 if i == 9:
                     plt.xlabel(
-                        'Longitude', fontsize=fontsize)
+                        'Longitude')
                     ax.set_xticks([-150, -100, -50, 0, 50, 100, 150])
                     plt.ylabel(
-                        'Latitude', fontsize=fontsize)
+                        'Latitude')
                     ax.set_xticklabels([-150, -100, -50, 0, 50, 100, 150])
                     ax.set_yticks([-80, -40, 0, 40, 80])
                 if i == 10 or i == 11 or i == 12:
-                    plt.xlabel('Longitude', fontsize=fontsize)
+                    plt.xlabel('Longitude')
                     ax.set_xticks([-150, -100, -50, 0, 50, 100, 150])
                     ax.set_yticklabels([])
                 if i == 1 or i == 5:
                     plt.ylabel(
-                        'Latitude', fontsize=fontsize)
+                        'Latitude')
                     ax.set_yticks([-80, -40, 0, 40, 80])
                     ax.set_xticklabels([])
-            ax.tick_params(axis='both', which='major', labelsize=fontsize)
+            ax.tick_params(axis='both', which='major')
             ax_legend = fig.add_axes([0.1225, 0.02725, 0.78, 0.022], zorder=3)
             cbar = fig.colorbar(im, cax=ax_legend,  # spacing='popotional',
                                 boundaries=color_bounds[var],
@@ -740,8 +747,8 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
                                 cmap=cmap,
                                 # fraction=0.034, pad=0.03, aspect=30,
                                 orientation='horizontal')
-            cbar.ax.tick_params(labelsize=fontsize, width=1.5)
-            cbar.set_label(cbar_label, fontweight="bold", fontsize=fontsize)
+            cbar.ax.tick_params(width=1.5)
+            cbar.set_label(cbar_label, fontweight="bold")
 
             plt.savefig(os.path.join(
                 out_save_dir, var + data_source + '_' + 'vals_per_months' + '_ppt_values_.png'),
@@ -847,7 +854,7 @@ if __name__ == '__main__':
 
     plot_global_maps('yearly', nc_f, nc_var_lst,
                      'lon', 'lat', main_dir, 'gpcc',
-                     False, False, False, False, True, False)
+                     False, True, True, False, False, False)
 
     STOP = timeit.default_timer()  # Ending time
     print(('\n\a\a\a Done with everything on %s. Total run time was'
