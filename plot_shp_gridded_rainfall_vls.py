@@ -74,7 +74,8 @@ if plot_avg:
     ax0.set_xlim(x_vls_arr.min() - 0.25, x_vls_arr.max() + 0.25)
     ax0.set_ylim(y_vls_arr.min() - 0.25, y_vls_arr.max() + 0.25)
     cmap = plt.get_cmap('viridis_r')
-    zi = griddata((x_vls_arr, y_vls_arr), df_mean.values, (x, y), method='linear')
+    zi = griddata((x_vls_arr, y_vls_arr), df_mean.values,
+                  (x, y), method='linear')
     # norm = colors.BoundaryNorm(boundaries=np.array([0, 180, 60]), ncolors=256)
     im = ax0.contourf(x, y, zi, 1000, cmap=cmap, extend='max',
                       vmin=0, vmax=165, origin='lower')
@@ -113,7 +114,7 @@ if plt_orig_monthly_vls:
     color_bounds = {var: bounds_mean}
     x_vals = x
     y_vals = y
-    fig = plt.figure(figsize=(48, 36), dpi=100)
+    fig = plt.figure(figsize=(26, 13), dpi=200)
     fig.subplots_adjust(hspace=0.1, wspace=0.1)
 #     up_lim = 400.01
 #     colors = [(0, "indianred"), (10 / up_lim, "orange"),
@@ -123,22 +124,32 @@ if plt_orig_monthly_vls:
 #               (300 / up_lim, 'lightblue'),
 #               (350 / up_lim, 'blue'),
 #               (400.01 / up_lim, 'darkblue')]
-# #     colors = [(0.0, "darkblue"), (0.0625, "lightblue"), (0.125, 'yellowgreen'),
-# #               (0.1825, 'limegreen'),
-# #               (0.25, "g"), (0.375, "darkgreen"),
-# #               (0.5, "violet"), (.875, 'orange'), (0.99, 'r'), (1, 'darkred')]
+#     colors = [(0.0, "darkblue"), (0.0625, "lightblue"), (0.125, 'yellowgreen'),
+#               (0.1825, 'limegreen'),
+#               (0.25, "g"), (0.375, "darkgreen"),
+#               (0.5, "violet"), (.875, 'orange'), (0.99, 'r'), (1, 'darkred')]
 #     cmap = mcolors.LinearSegmentedColormap.from_list(
 #         'my_colormap', colors)
-    cmap = plt.get_cmap('viridis_r')
+    cmap = plt.get_cmap('Blues')
 #             cbar_label = 'Average monthly rainfall values based on the data from 1950 till 2016 (mm/month)'
     cbar_label = '(mm/month)'
     monthes = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May',
                6: 'June', 7: 'July', 8: 'August', 9: 'September',
                10: 'October', 11: 'November', 12: 'December'}
-    fontsize = 26
 
-    xticks_label = np.linspace(x_vls_arr.min(), x_vls_arr.max(), 5, endpoint=True)
-    yticks_label = np.linspace(y_vls_arr.min(), y_vls_arr.max(), 5, endpoint=True)
+    from matplotlib import rc
+    from matplotlib import rcParams
+    rc('font', size=16)
+    rc('font', family='serif')
+    rc('axes', labelsize=20)
+    rc('xtick', labelsize=14)
+    rc('ytick', labelsize=14)
+    rcParams['axes.labelpad'] = 30
+
+    xticks_label = np.linspace(
+        x_vls_arr.min(), x_vls_arr.max(), 5, endpoint=True)
+    yticks_label = np.linspace(
+        y_vls_arr.min(), y_vls_arr.max(), 5, endpoint=True)
     for i in range(1, 13):
         print('plotting for var: %s and month nbr: %d' % (var, i))
 
@@ -146,17 +157,20 @@ if plt_orig_monthly_vls:
         ax.set_xlim(x_vls_arr.min() - 0.25, x_vls_arr.max() + 0.25)
         ax.set_ylim(y_vls_arr.min() - 0.25, y_vls_arr.max() + 0.25)
         ax.set_title('%s' %
-                     monthes[i], fontweight="bold", size=fontsize)  # Title
+                     monthes[i], fontweight="bold")  # Title
 
-        grid_vals = in_ppt_df_gpcp_res.iloc[in_ppt_df_gpcp_res.index.month == i, :].mean()
+        grid_vals = in_ppt_df_gpcp_res.iloc[in_ppt_df_gpcp_res.index.month == i, :].mean(
+        )
 
-        zi = griddata((x_vls_arr, y_vls_arr), grid_vals, (x, y), method='linear')
+        zi = griddata((x_vls_arr, y_vls_arr), grid_vals,
+                      (x, y), method='linear')
         print(zi.max())
         zi[zi < 0] = np.nan
 
     # norm = colors.BoundaryNorm(boundaries=np.array([0, 180, 60]), ncolors=256)
-        im = ax.contourf(x, y, zi, 1000, cmap=cmap, extend='max', origin='lower',
-                        vmin=0, vmax=300)
+        im = ax.contourf(x, y, zi, 1000, cmap=cmap,
+                         extend='max', origin='lower',
+                         vmin=0, vmax=300)
 
         ax.grid(True, alpha=0.5, linestyle='--')
 #         ax.tick_params(axis='x', labelsize=10)
@@ -166,31 +180,34 @@ if plt_orig_monthly_vls:
             ax.set_xticklabels([])
             ax.set_yticklabels([])
         if i == 9:
-            plt.xlabel(
-                'Longitude', fontsize=fontsize)
+            #             plt.xlabel('Longitude')
 
             ax.set_xticks(xticks_label)
-            plt.ylabel(
-                'Latitude', fontsize=fontsize)
+#             plt.ylabel('Latitude')
             ax.set_xticklabels(xticks_label)
 #             ax.tick_params(axis='x', labelsize=10)
 #             ax.tick_params(axis='y', labelsize=10)
         if i == 10 or i == 11 or i == 12:
-            plt.xlabel('Longitude', fontsize=fontsize)
+            #             plt.xlabel('Longitude')
             ax.set_xticks(xticks_label)
             ax.set_yticklabels([])
 #             ax.tick_params(axis='x', labelsize=10)
 #             ax.tick_params(axis='y', labelsize=10)
-        if i == 1 or i == 5:
-            plt.ylabel(
-                'Latitude', fontsize=fontsize)
+        if i == 1 or i == 5:  # i == 1 or
+            #             plt.ylabel('Latitude')
             ax.set_yticks(yticks_label)
             ax.set_xticklabels([])
 #             ax.tick_params(axis='x', labelsize=10)
 #             ax.tick_params(axis='y', labelsize=10)
         for k in range(len(shp_xx)):
             ax.plot(shp_xx[k], shp_yy[k], c='k', alpha=0.5)
-    ax.tick_params(axis='both', which='major', labelsize=fontsize)
+    fig.text(0.09, 0.5, 'Latitude', ha='center',
+             va='center', rotation='vertical', fontsize=16)
+
+    fig.text(0.5, 0.07, 'Longitude', ha='center',
+             va='center', rotation='horizontal', fontsize=16)
+
+    ax.tick_params(axis='both', which='major')
     ax_legend = fig.add_axes([0.1225, 0.02725, 0.78, 0.022], zorder=3)
 
     cbar = fig.colorbar(im, cax=ax_legend,  # spacing='popotional',
@@ -201,9 +218,9 @@ if plt_orig_monthly_vls:
                         cmap=cmap,
                         # fraction=0.034, pad=0.03, aspect=30,
                         orientation='horizontal')
-    cbar.ax.tick_params(labelsize=fontsize, width=1.5)
+    cbar.ax.tick_params(width=1.5)
     cbar.set_label('Rainfall average values from 1950-2016 (mm/month)',
-                   fontweight="bold", fontsize=fontsize)
+                   fontweight="bold")
 
     plt.savefig(os.path.join(
         main_dir + '_' + 'vals_per_months' + '_ppt_values_2.png'),

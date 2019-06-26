@@ -657,7 +657,7 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
             color_bounds = {var: bounds_mean}
             x_vals = cPickle.load(open("grid_x_vls.pkl", 'rb'))
             y_vals = cPickle.load(open("grid_y_vls.pkl", 'rb'))
-            fig = plt.figure(figsize=(27, 18), dpi=400)
+            fig = plt.figure(figsize=(26, 13), dpi=200)
             fig.subplots_adjust(hspace=0.1, wspace=0.1)
 #             up_lim = 800.01
 #             colors = [(0, "indianred"), (50 / up_lim, "orange"),
@@ -682,7 +682,7 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
             rc('font', size=16)
             rc('font', family='serif')
             rc('axes', labelsize=20)
-            rcParams['axes.labelpad'] = 35
+            rcParams['axes.labelpad'] = 15
             for i in range(1, 13):
                 print('plotting for var: %s and month nbr: %d' % (var, i))
 #                 df_fldr = os.path.join(data_dir_gpc, var + '_per_month',
@@ -737,7 +737,7 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
                     ax.set_yticks([-80, -40, 0, 40, 80])
                     ax.set_xticklabels([])
             ax.tick_params(axis='both', which='major')
-            ax_legend = fig.add_axes([0.1225, 0.02725, 0.78, 0.022], zorder=3)
+            ax_legend = fig.add_axes([0.1225, 0.004725, 0.78, 0.022], zorder=3)
             cbar = fig.colorbar(im, cax=ax_legend,  # spacing='popotional',
                                 boundaries=color_bounds[var],
                                 extend='max',
@@ -854,7 +854,7 @@ if __name__ == '__main__':
 
     plot_global_maps('yearly', nc_f, nc_var_lst,
                      'lon', 'lat', main_dir, 'gpcc',
-                     False, True, True, False, False, False)
+                     False, False, True, False, False, False)
 
     STOP = timeit.default_timer()  # Ending time
     print(('\n\a\a\a Done with everything on %s. Total run time was'

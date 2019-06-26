@@ -41,9 +41,9 @@ seasonal_variability_idx = False
 world_population = False
 ice_sheets = False
 global_reservoirs_per_country = False
-global_reservoirs_distribution = False
+global_reservoirs_distribution = True
 global_reservoirs_capacity_per_ctr = False
-water_demand_sector = True
+water_demand_sector = False
 
 make_plot_titles = False
 #==============================================================================
@@ -58,7 +58,9 @@ shp = r'ne_10m_admin_0_countries\ne_10m_admin_0_countries'
 assert shp
 glaciers_shp = r'glaciers_shp\10m_physical\ne_10m_glaciated_areas.shp'
 assert glaciers_shp
-in_shp_reservoirs = r'global_reservoirs_dams\dams-rev01-global\GRanD_dams_v1_1'
+# in_shp_reservoirs = r'global_reservoirs_dams\dams-rev01-global\GRanD_dams_v1_1'
+
+in_shp_reservoirs = r"X:\hiwi\ElHachem\Prof_Bardossy\Handook_Water_resources_Management\GRanD_Version_1_3\GRanD_dams_v1_3"
 assert in_shp_reservoirs
 
 fontsize = 13
@@ -997,6 +999,7 @@ if global_reservoirs_per_country:
 
 if global_reservoirs_distribution:
     my_dpi = 300
+
     fig = plt.figure(figsize=(22, 8), dpi=my_dpi)
 
     ax = fig.add_subplot(111, frame_on=False)
@@ -1017,52 +1020,89 @@ if global_reservoirs_distribution:
                     fontsize=fontsize)
     # m.drawrivers(linewidth=0.1, color='navy')
     m.readshapefile(in_shp_reservoirs, 'units', color='#444444', linewidth=.2)
-    s0 = 0.5
-#     cmap = plt.get_cmap('jet')
+
+    capacities = []
+    scatters_lst = []
     for i, (info_res, shape_res) in enumerate(zip(m.units_info, m.units)):
         cap_mcm = info_res['CAP_MCM']
 
         if cap_mcm < 0:
             cap_mcm = 0
+
+        capacities.append(cap_mcm)
+
+#         if (cap_mcm / 1000) > 50:
+#             c = 'g'
+        if (cap_mcm / 1000) > 100:
+            c = 'r'
+        else:
+            c = 'b'
 #         if 0 < cap_mcm <= 10:
-            #             s = s0
-#             c = 'darkblue'
+#             label = '<10'
+# #                         s = s0
+# #             c = 'darkblue'
 #         if 10 < cap_mcm <= 50:
-            #             cap_mcm = 50
-            # #             s = 2 * s0
-#             c = 'blue'
+#             label = '10-50'
+#             #             cap_mcm = 50
+#             # #             s = 2 * s0
+# #             c = 'blue'
 #         if 50 < cap_mcm <= 100:
-            #             cap_mcm = 100
-            # #             s = 3 * s0
-#             c = 'darkgreen'
+#             label = '50-100'
+#             #             cap_mcm = 100
+#             # #             s = 3 * s0
+# #             c = 'darkgreen'
 #         if 100 < cap_mcm <= 200:
-            #             cap_mcm = 200
-            # #             s = 4 * s0
-#             c = 'green'
+#             label = '100-200'
+#             #             cap_mcm = 200
+#             # #             s = 4 * s0
+# #             c = 'green'
 #         if 200 < cap_mcm <= 300:
-            #             cap_mcm = 300
-            #             s = 5 * s0
-#             c = 'pink'
-#         if 300 < cap_mcm <= 400:
-            #             s = 6 * s0
-#             c = 'm'
-#         if 400 < cap_mcm <= 500:
-            #             s = 7 * s0
-#             c = 'salmon'
-#         if 500 < cap_mcm:
-            #             s = 8 * s0
+#             label = '200-300'
+#             #             cap_mcm = 300
+#             #             s = 5 * s0
+# #             c = 'pink'
+# #         if 300 < cap_mcm <= 400:
+#             #             s = 6 * s0
+# #             c = 'm'
+#         if 300 < cap_mcm <= 500:
+#             label = '300-500'
+#             #             s = 7 * s0
+# #             c = 'salmon'
+#         if 500 > cap_mcm:
+#             label = '>500'
+        #             s = 8 * s0
 #             c = 'darkred'
 
-#         if cap_mcm
 #         print(cap_mcm)
-        ax.scatter(shape_res[0], shape_res[1], s=cap_mcm / 10000,
-                   c='blue', marker='d', alpha=0.75)
+        ax.scatter(shape_res[0], shape_res[1],
+                   s=cap_mcm / 10000,
+                   c=c, marker='d', alpha=0.75)
+
+    l1 = ax.scatter([], [], s=0.1,  c='b', marker='d')
+    l2 = ax.scatter([], [], s=1,  c='b', marker='d')
+    l3 = ax.scatter([], [], s=3, c='b', marker='d')
+    l4 = ax.scatter([], [], s=10,  c='g', marker='d')
+    l5 = ax.scatter([], [], s=20, c='r', marker='d')
+
+
+#     labels = list(np.unique(df_.cat.values))
+    labels = ['<1', '1-5', '5-10', '10-100', '>100']
+    leg = ax.legend([l1, l2, l3, l4, l5], labels, ncol=10,
+                    frameon=True, fontsize=12,
+                    handlelength=1, loc=8, borderpad=.5,
+                    handletextpad=0.5,
+                    title=' Reservoir Storage Capacity $Km^{3}$',
+                    scatterpoints=1)
     ax.set_xlabel('Longitude', fontsize=12)
+#     ax.legend(loc=0)
     ax.xaxis.set_label_coords(.5, -0.065)
     ax.set_ylabel('Latitude', fontsize=12)
     ax.yaxis.set_label_coords(-0.045, 0.5)
-    savefig('reservoirs')
 
+    savefig('reservoirs2')
+#==============================================================================
+#
+#==============================================================================
 if global_reservoirs_capacity_per_ctr:
 
     my_dpi = 300
@@ -1240,7 +1280,8 @@ if water_demand_sector:
         bins = [0, 60, 70.0, 80.0, 90, 100]
 #     bins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45,
 #             50, 55, 60, 65, 70.0, 80.0, 90, 100]
-    do_colorbar(fig, cmap, bins, 'Agriculture water withdrawal as % of total water withdrawal (%)', 'neither')
+    do_colorbar(fig, cmap, bins,
+                'Agriculture water withdrawal as % of total water withdrawal (%)', 'neither')
     savefig('Agriculture_ratio2')
 
 STOP = timeit.default_timer()  # Ending time

@@ -1,2 +1,5 @@
 eclipse.preferences.version=1
+encoding/desalination_map.py=utf-8
 encoding/fluxes_spatial_dist_functions.py=utf-8
+encoding/plot_shp_gridded_rainfall_vls.py=utf-8
+encoding/water_withdraw_data.py=utf-8
