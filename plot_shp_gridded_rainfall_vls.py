@@ -114,7 +114,7 @@ if plt_orig_monthly_vls:
     color_bounds = {var: bounds_mean}
     x_vals = x
     y_vals = y
-    fig = plt.figure(figsize=(26, 13), dpi=200)
+    fig = plt.figure(figsize=(27, 16), dpi=200)
     fig.subplots_adjust(hspace=0.1, wspace=0.1)
 #     up_lim = 400.01
 #     colors = [(0, "indianred"), (10 / up_lim, "orange"),
