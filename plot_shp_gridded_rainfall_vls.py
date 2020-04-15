@@ -68,7 +68,7 @@ for shape_rv in shp_riv.shapeRecords():
 
 x, y = np.meshgrid(np.linspace(x_vls_arr.min(), x_vls_arr.max(), 30),
                    np.linspace(y_vls_arr.min(), y_vls_arr.max(), 30))
-plot_avg = True
+plot_avg = False
 if plot_avg:
     fig, ax0 = plt.subplots(nrows=1, figsize=(16, 14), dpi=200)
     ax0.set_xlim(x_vls_arr.min() - 0.25, x_vls_arr.max() + 0.25)
@@ -109,12 +109,12 @@ plt_orig_monthly_vls = True
 if plt_orig_monthly_vls:
     var = 'df_average_monthly_vals'
     var_bounds_dict = {var: [0, 301]}
-    bounds_mean = [0, 25, 50, 100., 150, 200, 250, 300, 300.01]
+    bounds_mean = [0, 25, 50, 75, 100., 150, 200, 250, 300, 300.01]
 
     color_bounds = {var: bounds_mean}
     x_vals = x
     y_vals = y
-    fig = plt.figure(figsize=(27, 16), dpi=200)
+    fig = plt.figure(figsize=(23, 15), dpi=200)  # (20, 24)
     fig.subplots_adjust(hspace=0.1, wspace=0.1)
 #     up_lim = 400.01
 #     colors = [(0, "indianred"), (10 / up_lim, "orange"),
@@ -130,7 +130,15 @@ if plt_orig_monthly_vls:
 #               (0.5, "violet"), (.875, 'orange'), (0.99, 'r'), (1, 'darkred')]
 #     cmap = mcolors.LinearSegmentedColormap.from_list(
 #         'my_colormap', colors)
-    cmap = plt.get_cmap('Blues')
+    interval_ppt = np.linspace(0.1, 0.95)
+    colors_ppt = plt.get_cmap('Blues')(interval_ppt)
+    cmap = mcolors.LinearSegmentedColormap.from_list(
+        'name', colors_ppt)
+
+    #cmap_ppt = plt.get_cmap('jet_r')
+    cmap.set_over('darkblue')
+    norm_ppt = mcolors.BoundaryNorm(bounds_mean, cmap.N)
+    # cmap = plt.get_cmap('Blues')
 #             cbar_label = 'Average monthly rainfall values based on the data from 1950 till 2016 (mm/month)'
     cbar_label = '(mm/month)'
     monthes = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May',
@@ -146,16 +154,17 @@ if plt_orig_monthly_vls:
     rc('ytick', labelsize=14)
     rcParams['axes.labelpad'] = 30
 
-    xticks_label = np.linspace(
-        x_vls_arr.min(), x_vls_arr.max(), 5, endpoint=True)
-    yticks_label = np.linspace(
-        y_vls_arr.min(), y_vls_arr.max(), 5, endpoint=True)
+    xticks_label = np.round(np.linspace(
+        x_vls_arr.min(), x_vls_arr.max(), 3, endpoint=True), 2)
+    yticks_label = np.round(np.linspace(
+        y_vls_arr.min(), y_vls_arr.max(), 3, endpoint=True), 2)
     for i in range(1, 13):
         print('plotting for var: %s and month nbr: %d' % (var, i))
 
-        ax = fig.add_subplot(3, 4, i)
-        ax.set_xlim(x_vls_arr.min() - 0.25, x_vls_arr.max() + 0.25)
-        ax.set_ylim(y_vls_arr.min() - 0.25, y_vls_arr.max() + 0.25)
+        #ax = fig.add_subplot(3, 4, i)
+        ax = fig.add_subplot(2, 6, i)
+        ax.set_xlim(x_vls_arr.min(), x_vls_arr.max())
+        ax.set_ylim(y_vls_arr.min(), y_vls_arr.max())
         ax.set_title('%s' %
                      monthes[i], fontweight="bold")  # Title
 
@@ -168,7 +177,7 @@ if plt_orig_monthly_vls:
         zi[zi < 0] = np.nan
 
     # norm = colors.BoundaryNorm(boundaries=np.array([0, 180, 60]), ncolors=256)
-        im = ax.contourf(x, y, zi, 1000, cmap=cmap,
+        im = ax.contourf(x, y, zi, 1000, cmap=cmap, norm=norm_ppt,
                          extend='max', origin='lower',
                          vmin=0, vmax=300)
 
@@ -176,24 +185,47 @@ if plt_orig_monthly_vls:
 #         ax.tick_params(axis='x', labelsize=10)
 #         ax.tick_params(axis='y', labelsize=10)
 
-        if i in [2, 3, 4, 6, 7, 8]:
+#         if i in [2, 3, 4, 6, 7, 8]:
+#             ax.set_xticklabels([])
+#             ax.set_yticklabels([])
+#         if i == 9:
+#             #             plt.xlabel('Longitude')
+#
+#             ax.set_xticks(xticks_label)
+# #             plt.ylabel('Latitude')
+#             ax.set_xticklabels(xticks_label)
+# #             ax.tick_params(axis='x', labelsize=10)
+# #             ax.tick_params(axis='y', labelsize=10)
+#         if i == 10 or i == 11 or i == 12:
+#             #             plt.xlabel('Longitude')
+#             ax.set_xticks(xticks_label)
+#             ax.set_yticklabels([])
+# #             ax.tick_params(axis='x', labelsize=10)
+# #             ax.tick_params(axis='y', labelsize=10)
+#         if i == 1 or i == 5:  # i == 1 or
+#             #             plt.ylabel('Latitude')
+#             ax.set_yticks(yticks_label)
+#             ax.set_xticklabels([])
+        if i in [2, 3, 4, 5, 6]:
             ax.set_xticklabels([])
             ax.set_yticklabels([])
-        if i == 9:
+        if i == 7:
             #             plt.xlabel('Longitude')
 
             ax.set_xticks(xticks_label)
+            ax.set_yticks(yticks_label)
+            ax.set_yticklabels(yticks_label)
 #             plt.ylabel('Latitude')
             ax.set_xticklabels(xticks_label)
 #             ax.tick_params(axis='x', labelsize=10)
 #             ax.tick_params(axis='y', labelsize=10)
-        if i == 10 or i == 11 or i == 12:
+        if i in [8, 9, 10, 11, 12]:
             #             plt.xlabel('Longitude')
             ax.set_xticks(xticks_label)
             ax.set_yticklabels([])
 #             ax.tick_params(axis='x', labelsize=10)
 #             ax.tick_params(axis='y', labelsize=10)
-        if i == 1 or i == 5:  # i == 1 or
+        if i == 1:  # i == 1 or
             #             plt.ylabel('Latitude')
             ax.set_yticks(yticks_label)
             ax.set_xticklabels([])
@@ -201,6 +233,7 @@ if plt_orig_monthly_vls:
 #             ax.tick_params(axis='y', labelsize=10)
         for k in range(len(shp_xx)):
             ax.plot(shp_xx[k], shp_yy[k], c='k', alpha=0.5)
+            ax.axis('equal')
     fig.text(0.09, 0.5, 'Latitude', ha='center',
              va='center', rotation='vertical', fontsize=16)
 
@@ -214,7 +247,8 @@ if plt_orig_monthly_vls:
                         boundaries=color_bounds[var],
                         extend='max',
                         ticks=color_bounds[var],
-                        norm=mcolors.BoundaryNorm(color_bounds[var], cmap.N),
+                        norm=norm_ppt,
+                        #mcolors.BoundaryNorm(color_bounds[var], cmap.N),
                         cmap=cmap,
                         # fraction=0.034, pad=0.03, aspect=30,
                         orientation='horizontal')
@@ -223,7 +257,7 @@ if plt_orig_monthly_vls:
                    fontweight="bold")
 
     plt.savefig(os.path.join(
-        main_dir + '_' + 'vals_per_months' + '_ppt_values_2.png'),
+        main_dir + '_' + 'vals_per_months' + '_ppt_values_4.png'),
         frameon=True, papertype='a4', bbox_inches='tight')
     plt.close()
 

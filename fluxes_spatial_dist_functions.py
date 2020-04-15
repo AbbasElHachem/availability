@@ -565,6 +565,9 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
     #                  'df_average_%s_vals' % var_to_plt]
     vars_fldr = ['df_average_%s_vals' % var_to_plt]
 
+    x_vals = cPickle.load(open("grid_x_vls.pkl", 'rb'))
+    y_vals = cPickle.load(open("grid_y_vls.pkl", 'rb'))
+
     if var_to_plt == 'yearly':
         if plt_orig_vls:
             #             var_bounds_dict = {vars_fldr[0]: [0, 5],
@@ -614,8 +617,7 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
             #                                                               long_name,
             #                                                               lat_name,
             # what_to_plt)
-            x_vals = cPickle.load(open("grid_x_vls.pkl", 'rb'))
-            y_vals = cPickle.load(open("grid_y_vls.pkl", 'rb'))
+
             grid_vals = cPickle.load(open("grid_orig_vls.pkl", "rb"))
             plot_title = ('Mean Annual Precipitation (1950 - 2016)')
             plot_colormesh(var, x_vals, y_vals, grid_vals, color_bounds,
@@ -634,8 +636,6 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
             #             cPickle.dump(x_vals, open("grid_std_x_vals_.pkl", "wb"))
             #             cPickle.dump(y_vals, open("grid_std_y_vals_.pkl", "wb"))
             #             cPickle.dump(grid_vals, open("grid_std_var_.pkl", "wb"))
-            x_vals = cPickle.load(open("grid_std_x_vals_.pkl", 'rb'))
-            y_vals = cPickle.load(open("grid_std_y_vals_.pkl", 'rb'))
 
             grid_vals = cPickle.load(open("grid_std_var_.pkl", "rb"))
 #             import pdb
@@ -646,18 +646,20 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
             plot_colormesh(var, x_vals, y_vals, grid_vals, color_bounds,
                            out_save_dir, plot_title, var_bounds_dict,
                            'std_dev', data_source)
+
         if plt_orig_monthly_vls:
             var = 'df_average_monthly_vals'
-            var_bounds_dict = {var: [0, 800.01]}
-            bounds_mean = [0, 50, 100, 150, 200, 300, 400, 500,
-                           600, 700, 800, 800.01]
+            var_bounds_dict = {var: [0, 300.01]}
+            bounds_mean = [0, 25, 50, 100, 125, 150,
+                           200, 250, 300, 301.0]  # 400, 500,
+            # 600, 601]  # , 800, 800.01]
 #             var_bounds_dict = {var: [0, .51]}
 #             bounds_mean = [0, 0.050, 0.100, 0.150, 0.200, 0.300, 0.400, 0.500]
             # 0.600, 0.700, 0.800]
             color_bounds = {var: bounds_mean}
-            x_vals = cPickle.load(open("grid_x_vls.pkl", 'rb'))
-            y_vals = cPickle.load(open("grid_y_vls.pkl", 'rb'))
-            fig = plt.figure(figsize=(26, 13), dpi=200)
+
+            plt.ioff()
+            fig = plt.figure(figsize=(28, 14), dpi=200)
             fig.subplots_adjust(hspace=0.1, wspace=0.1)
 #             up_lim = 800.01
 #             colors = [(0, "indianred"), (50 / up_lim, "orange"),
@@ -666,12 +668,26 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
 #                       (600 / up_lim, 'lightblue'),
 #                       (800 / up_lim, 'blue'),
 #                       (800.01 / up_lim, 'darkblue')]
-            colors = [(0.0, "darkblue"), (0.0625, "lightblue"), (0.125, 'yellowgreen'),
-                      (0.1825, 'limegreen'),
-                      (0.25, "g"), (0.375, "darkgreen"),
-                      (0.5, "violet"), (.875, 'orange'), (0.99, 'r'), (1, 'darkred')]
+#             colors = [(0.0, "darkblue"), (0.0625, "lightblue"), (0.125, 'yellowgreen'),
+#                       (0.1825, 'limegreen'),
+#                       (0.25, "g"), (0.375, "darkgreen"),
+#                       (0.5, "violet"), (.875, 'orange'), (0.99, 'r'), (1, 'darkred')]
+#
+#             colors = [(0.0, "r"), (0.0625, "salmon"), (0.125, 'orange'),
+#                       (0.1825, 'violet'),
+#                       (0.25, "darkgreen"), (0.375, "g"),
+#                       (0.5, "limegreen"), (.875, 'yellowgreen'),
+#                       (0.99, 'blue'), (1, 'darkblue')]
+#             cmap = mcolors.LinearSegmentedColormap.from_list(
+#                 'my_colormap', colors)
+
+            interval_ppt = np.linspace(0.1, 0.95)
+            colors_ppt = plt.get_cmap('jet_r')(interval_ppt)
             cmap = mcolors.LinearSegmentedColormap.from_list(
-                'my_colormap', colors)
+                'name', colors_ppt)
+            #cmap_ppt = plt.get_cmap('jet_r')
+            cmap.set_over('darkblue')
+            norm_ppt = mcolors.BoundaryNorm(bounds_mean, cmap.N)
 #             cbar_label = 'Average monthly rainfall values based on the data from 1950 till 2016 (mm/month)'
             cbar_label = '(mm/month)'
             monthes = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May',
@@ -682,7 +698,8 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
             rc('font', size=16)
             rc('font', family='serif')
             rc('axes', labelsize=20)
-            rcParams['axes.labelpad'] = 15
+            rcParams['axes.labelpad'] = 14
+
             for i in range(1, 13):
                 print('plotting for var: %s and month nbr: %d' % (var, i))
 #                 df_fldr = os.path.join(data_dir_gpc, var + '_per_month',
@@ -711,6 +728,7 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
 
                 im = ax.pcolormesh(x_vals, y_vals, grid_vals[0], cmap=cmap,  # cmap,
                                    snap=True, alpha=1, shading='gouraud',
+                                   norm=norm_ppt,
                                    vmin=var_bounds_dict[var][0],
                                    vmax=var_bounds_dict[var][1])
 
@@ -720,45 +738,48 @@ def plot_global_maps(var_to_plt, nc_files, nc_var_list, long_name,
                     ax.set_xticklabels([])
                     ax.set_yticklabels([])
                 if i == 9:
-                    plt.xlabel(
-                        'Longitude')
+                    # plt.xlabel('Longitude')
                     ax.set_xticks([-150, -100, -50, 0, 50, 100, 150])
-                    plt.ylabel(
-                        'Latitude')
+                    # plt.ylabel('Latitude')
                     ax.set_xticklabels([-150, -100, -50, 0, 50, 100, 150])
                     ax.set_yticks([-80, -40, 0, 40, 80])
                 if i == 10 or i == 11 or i == 12:
-                    plt.xlabel('Longitude')
+                    # plt.xlabel('Longitude')
                     ax.set_xticks([-150, -100, -50, 0, 50, 100, 150])
                     ax.set_yticklabels([])
                 if i == 1 or i == 5:
-                    plt.ylabel(
-                        'Latitude')
+                    # plt.ylabel('Latitude')
                     ax.set_yticks([-80, -40, 0, 40, 80])
                     ax.set_xticklabels([])
+
+            print('Saving fig')
             ax.tick_params(axis='both', which='major')
             ax_legend = fig.add_axes([0.1225, 0.004725, 0.78, 0.022], zorder=3)
             cbar = fig.colorbar(im, cax=ax_legend,  # spacing='popotional',
                                 boundaries=color_bounds[var],
                                 extend='max',
                                 ticks=color_bounds[var],
-                                norm=mcolors.BoundaryNorm(
-                                    color_bounds[var], cmap.N),
+                                norm=norm_ppt,  # mcolors.BoundaryNorm(
+                                # color_bounds[var], cmap.N),
                                 cmap=cmap,
                                 # fraction=0.034, pad=0.03, aspect=30,
                                 orientation='horizontal')
             cbar.ax.tick_params(width=1.5)
             cbar.set_label(cbar_label, fontweight="bold")
 
-            plt.savefig(os.path.join(
-                out_save_dir, var + data_source + '_' + 'vals_per_months' + '_ppt_values_.png'),
-                frameon=True, papertype='a4', bbox_inches='tight')
+            fig.text(0.5, 0.05, 'Longitude', ha='center')
+            fig.text(0.09, 0.5, 'Latitude', va='center', rotation='vertical')
+
+            out_name = os.path.join(
+                out_save_dir, var + data_source + '_' + 'vals_per_months' +
+                '_ppt_values_2.png')
+            plt.savefig(out_name,
+                        frameon=True, papertype='a4', bbox_inches='tight')
+            print('Done saving fig')
             plt.close()
 #==============================================================
 #
 #==============================================================
-    x_vals = cPickle.load(open("grid_x_vls.pkl", 'rb'))
-    y_vals = cPickle.load(open("grid_y_vls.pkl", 'rb'))
 
     if plt_coeff_of_var:
         var = 'Coff_of_Variation'
@@ -851,10 +872,14 @@ if __name__ == '__main__':
 #                            'lat', 'M', 'monthly', data_dir_gpc,
 #                            use_fctr=False, unit_fctr=1)
 #
-
-    plot_global_maps('yearly', nc_f, nc_var_lst,
-                     'lon', 'lat', main_dir, 'gpcc',
-                     False, False, True, False, False, False)
+#
+    plot_global_maps(var_to_plt='monthly', nc_files=nc_f, nc_var_list=nc_var_lst,
+                     long_name='lon', lat_name='lat',
+                     out_save_dir=main_dir, data_source='gpcc',
+                     plt_orig_vls=False,
+                     plt_var_mtx=False, plt_orig_monthly_vls=True,
+                     plt_coeff_of_var=False, plt_max_temp_dev=False,
+                     plt_min_temp_dev=False)
 
     STOP = timeit.default_timer()  # Ending time
     print(('\n\a\a\a Done with everything on %s. Total run time was'

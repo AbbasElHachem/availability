@@ -31,7 +31,7 @@ START = timeit.default_timer()  # to get the runtime of the program
 desalination_plants = False
 water_scarcity = False
 inflow_outflow = False
-lorenz_curves = False
+lorenz_curves = True
 cultivation_area_ratio = False
 dependency_ratio = False
 groudnwater_availability = False
@@ -41,7 +41,7 @@ seasonal_variability_idx = False
 world_population = False
 ice_sheets = False
 global_reservoirs_per_country = False
-global_reservoirs_distribution = True
+global_reservoirs_distribution = False
 global_reservoirs_capacity_per_ctr = False
 water_demand_sector = False
 
@@ -63,7 +63,7 @@ assert glaciers_shp
 in_shp_reservoirs = r"X:\hiwi\ElHachem\Prof_Bardossy\Handook_Water_resources_Management\GRanD_Version_1_3\GRanD_dams_v1_3"
 assert in_shp_reservoirs
 
-fontsize = 13
+fontsize = 16
 colorbar_label_fontsize = 16
 #==============================================================================
 #
@@ -337,10 +337,11 @@ if lorenz_curves:
     plt.yticks(np.arange(0.0, 1.01, 0.2), fontsize=fontsize)
     plt.xticks(np.arange(0.0, 1.01, 0.2), fontsize=fontsize)
     plt.grid(linestyle='--', alpha=0.5)
-    plt.xlabel("Fraction of Global Population (capita)", fontsize=fontsize)
+    plt.xlabel("Fraction of Global Population (capita)", fontsize=fontsize + 3,
+               labelpad=14)
     plt.ylabel(
         r"Fraction of Global Water Availability (m$^3$/capita)",
-        fontsize=fontsize)
+        fontsize=fontsize + 3, labelpad=14)
 #     a = plt.axes([0.185, 0.65, .2, .2], facecolor='w')
 #     plt.plot(d_slope.index, d_slope['slope'].values, c='g',
 #              label='Slope', linewidth=1)
