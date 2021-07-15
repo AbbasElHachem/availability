@@ -103,9 +103,17 @@ def extract_grid_ppt_shpfile(_,
 
             time_arr = nc.num2date(in_nc.variables[other_args[2]][:],
                                    time_var.units,
-                                   calendar='standard')   # time_var.calendar)
-            time_index = pd.date_range(start=time_arr[0], end=time_arr[-1],
-                                       freq=time_freq)
+                                   calendar=time_var.calendar)
+
+            #'standard')   # time_var.calendar)
+            try:
+                time_index = pd.date_range(start=time_arr[0], end=time_arr[-1],
+                                           freq=time_freq)
+
+            except Exception:
+                dates_arr = [np.datetime64(dd) for dd in time_arr.data]
+                time_index = pd.DatetimeIndex(dates_arr)
+
             ppt_var = in_nc.variables[other_args[5]]
 
             print('Counting time from (in the netCDF file):', time_var.units)
@@ -276,14 +284,14 @@ if __name__ == '__main__':
                                    r'Nile_qgis\nile_basin\nile_basin.shp')]
     assert in_cat_shpfile
     in_data_dir = os.path.join(r'X:\exchange\ElHachem\PPT_data')
-    in_nc_files = [os.path.join(in_data_dir, 'precip.mon.mean.0.5x0.5.nc')]
-#     in_nc_files = [os.path.join(in_data_dir, 'full_data_monthly_v2018_025.nc')]
+   # in_nc_files = [os.path.join(in_data_dir, 'precip.mon.mean.0.5x0.5.nc')]
+    in_nc_files = [os.path.join(in_data_dir, 'full_data_monthly_v2018_025.nc')]
     assert in_nc_files
 
     in_nc_ext = in_nc_files[0][-15:-3]
-    out_dict_vals_name = ('out_nc_gridded_monthly_ppt_data_nc_f_%s'
+    out_dict_vals_name = ('out_nc_gridded_monthly_ppt_data_nc_f_%s2'
                           % in_nc_ext)
-    out_dict_coords_name = ('out_nc_gridded_monthly_ppt_coords_nc_f_%s'
+    out_dict_coords_name = ('out_nc_gridded_monthly_ppt_coords_nc_f_%s2'
                             % in_nc_ext)
 
     other_args = ['HYBAS_ID', 4326, 'time', 'lon',
@@ -292,7 +300,7 @@ if __name__ == '__main__':
     start_date = '1891-01-01'
     end_date = '2016-12-01'
 
-    freq = 'M'
+    freq = 'MS'  # 'M'
 
     for in_cat_shp in in_cat_shpfile:
         cat_vec = ogr.Open(in_cat_shp)
@@ -329,10 +337,10 @@ if __name__ == '__main__':
     save_obj(out_dict_coords, out_dict_coords_name)
 
     our_dict_ = read_dict_and_make_nc_files(
-        os.path.join(main_dir, 'out_nc_gridded_monthly_ppt_data_nc_f_%s.pkl'
+        os.path.join(main_dir, 'out_nc_gridded_monthly_ppt_data_nc_f_%s2.pkl'
                      % in_nc_ext))[0]
     coord_dict = read_dict_and_make_nc_files(
-        os.path.join(main_dir, 'out_nc_gridded_monthly_ppt_coords_nc_f_%s.pkl'
+        os.path.join(main_dir, 'out_nc_gridded_monthly_ppt_coords_nc_f_%s2.pkl'
                      % in_nc_ext))[0]
 
     build_df_from_dict(our_dict_, coord_dict, in_nc_ext,

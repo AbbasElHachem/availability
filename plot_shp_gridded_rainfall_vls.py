@@ -244,12 +244,8 @@ if plt_orig_monthly_vls:
     ax_legend = fig.add_axes([0.1225, 0.02725, 0.78, 0.022], zorder=3)
 
     cbar = fig.colorbar(im, cax=ax_legend,  # spacing='popotional',
-                        boundaries=color_bounds[var],
-                        extend='max',
+                        # boundaries=color_bounds[var],
                         ticks=color_bounds[var],
-                        norm=norm_ppt,
-                        #mcolors.BoundaryNorm(color_bounds[var], cmap.N),
-                        cmap=cmap,
                         # fraction=0.034, pad=0.03, aspect=30,
                         orientation='horizontal')
     cbar.ax.tick_params(width=1.5)
@@ -257,8 +253,8 @@ if plt_orig_monthly_vls:
                    fontweight="bold")
 
     plt.savefig(os.path.join(
-        main_dir + '_' + 'vals_per_months' + '_ppt_values_4.png'),
-        frameon=True, papertype='a4', bbox_inches='tight')
+        main_dir + '_' + 'vals_per_months' + '_ppt_values_5.png'),
+        bbox_inches='tight')
     plt.close()
 
 STOP = timeit.default_timer()  # Ending time
